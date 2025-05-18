@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1
+  labels: #these labels are deploment labels
+    app: app1
+spec:
+  replicas: 1
+  selector:
+    matchLabels: #these labels are used to find the pods
+      app: app1
+  template: #template dhagara nuchi kindha antha pod definition , paina antha deployment
+    metadata:
+      labels: #these labels are pod labels
+        app: app1
+    spec:
+      containers:
+      - name: app1
+        image: charankumarpadeti/app1:v1
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: app1
+spec:
+  selector: #paina vuna pod create ipothadi service dheniki velli attach avvali that is the service.
+    app: app1
+  ports:
+  - protocol: TCP
+    port: 80 #service port we can give anything
+    targetPort: 80 #containerPort  , nginx
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app1
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/tags: Environment=dev,Team=test,Project=roboshop
+    alb.ingress.kubernetes.io/group.name: joindevops
+spec:
+  ingressClassName: alb
+  rules:
+  - host: "app1.devopspractice.fun"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/bar"
+        backend:
+          service:
+            name: app1
+            port:
+              number: 80
