@@ -49,6 +49,7 @@ metadata:
     alb.ingress.kubernetes.io/tags: Environment=dev,Team=test,Project=roboshop
     alb.ingress.kubernetes.io/group.name: joindevops
 spec:
+  ingressClassName: alb
   rules:
   - host: "app2.devopspractice.fun"
     http:
